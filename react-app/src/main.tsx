@@ -12,6 +12,7 @@ import SignUpView from "./components/auth/SignUpView";
 import LoginView from "./components/auth/LoginView";
 import Logout from "./components/auth/Logout";
 import NotFound from "./components/NotFound";
+import Evaluations from "./components/Evaluations";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route path="" element={<MemoryGame />} />
+          <Route path="Evals" element={<Evaluations />} />
           <Route path="" element={<ProtectedRoutes />}>
             <Route path="user-edit/me" element={<UserEditView />} />
             <Route path="password-edit/me" element={<PasswordEditView />} />
