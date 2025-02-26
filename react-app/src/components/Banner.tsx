@@ -41,6 +41,10 @@ function Banner() {
     setRegleOuvert(false);
   };
 
+  const handleEvaluationsClick = (): void => {
+    navigate("/evals/");
+  };
+
   return (
     <>
       <AppBar position="fixed">
@@ -52,6 +56,17 @@ function Banner() {
               sx={{ cursor: "pointer", flexGrow: 1, textDecoration: "none" }}
             >
               <Typography variant="h6">Le jeux de mémoire trop cool</Typography>
+            </Link>
+            <Link
+              color="inherit"
+              onClick={handleEvaluationsClick}
+              sx={{
+                cursor: "pointer",
+                textDecoration: "none",
+                marginRight: "1rem",
+              }}
+            >
+              Voir les évaluations
             </Link>
             <Link
               color="inherit"
