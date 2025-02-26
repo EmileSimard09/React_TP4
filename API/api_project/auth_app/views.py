@@ -17,7 +17,7 @@ from auth_app.serializers import \
   TokenSerializer
 
 class CurrentUserView(APIView):
-  http_method_names = ['get', 'put']
+  http_method_names = ['get', 'put', 'delete']
   permission_classes = [IsAuthenticated]
 
   def get(self, request):
@@ -43,6 +43,11 @@ class CurrentUserView(APIView):
 
     user_serializer = UserSerializer(updated_user, context={'request': request})
     return Response(user_serializer.data, status=status.HTTP_200_OK)
+  
+  def delete(self, request):
+        user = request.user
+        user.delete()
+        return Response({"detail": "Compte suprimmé avec succes"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CurrentUserPasswordView(APIView):

@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import IPlayingCard from "../data_interfaces/IPlayingCard";
 import PlayingCard from "./PlayingCard";
+import { storageAccessTokenKey } from "../data_services/CustomAxios";
 
 const images = import.meta.glob("../../public/cards-images/*.jpg");
 
@@ -142,23 +143,29 @@ export default function MemoryGame() {
           </div>
         ) : (
           <>
-            <FormControl sx={{ m: 1, minWidth: 120 }}>
-              <InputLabel id="game-level-label">Niveau de jeu</InputLabel>
-              <Select
-                labelId="game-level-label"
-                value={gameLevel}
-                label="Niveau de jeu"
-                onChange={(e) =>
-                  changeGameLevel(e.target.value as keyof typeof gameLevels)
-                }
-              >
-                {Object.keys(gameLevels).map((level) => (
-                  <MenuItem key={level} value={level}>
-                    {level}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {localStorage.getItem(storageAccessTokenKey) ? (
+              <FormControl sx={{ m: 1, minWidth: 120 }}>
+                <InputLabel id="game-level-label">Niveau de jeu</InputLabel>
+                <Select
+                  labelId="game-level-label"
+                  value={gameLevel}
+                  label="Niveau de jeu"
+                  onChange={(e) =>
+                    changeGameLevel(e.target.value as keyof typeof gameLevels)
+                  }
+                >
+                  {Object.keys(gameLevels).map((level) => (
+                    <MenuItem key={level} value={level}>
+                      {level}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
+                Connectez-vous pour changer le niveau de jeu.
+              </Typography>
+            )}
             <div style={{ marginBottom: "1rem" }}>
               <Button
                 onClick={() => changeCardBackColor("ghostwhite")}
