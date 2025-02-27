@@ -11,10 +11,20 @@ import {
   TableBody,
   Box,
   Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
 } from "@mui/material";
 
 function PartiesJouees() {
   const [partiesJouees, setPartiesJouees] = useState<IPartieJouee[]>([]);
+  const [nombreAfficher, setNombreAfficher] = useState<number>(20);
+
+  const handleNombreAfficher = (event: SelectChangeEvent<number>) => {
+    setNombreAfficher(event.target.value as number);
+  };
 
   useEffect(() => {
     PartiesJoueesDS.getAll().then((response) => {
@@ -42,12 +52,13 @@ function PartiesJouees() {
             <TableRow>
               <TableCell>Niveau</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Durée (heures)</TableCell>
+              <TableCell>Durée (Secondes)</TableCell>
               <TableCell>Nombre de tentatives</TableCell>
+              <TableCell>Statut</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {partiesJouees.map((partie) => (
+            {partiesJouees.slice(0, nombreAfficher).map((partie) => (
               <TableRow key={partie.id}>
                 <TableCell>{partie.niveau}</TableCell>
                 <TableCell>
@@ -61,6 +72,9 @@ function PartiesJouees() {
                 </TableCell>
                 <TableCell>{partie.duree}</TableCell>
                 <TableCell>{partie.tentatives}</TableCell>
+                <TableCell>
+                  {partie.terminee ? "Partie finie" : "Partie incomplète"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -76,6 +90,19 @@ function PartiesJouees() {
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
         Parties Jouées
       </Typography>
+      <FormControl sx={{ mb: 2, width: "200px" }}>
+        <InputLabel id="games-to-show-label">Afficher</InputLabel>
+        <Select
+          labelId="games-to-show-label"
+          value={nombreAfficher}
+          onChange={handleNombreAfficher}
+          label="Afficher"
+        >
+          <MenuItem value={20}>20</MenuItem>
+          <MenuItem value={50}>50</MenuItem>
+          <MenuItem value={100}>100</MenuItem>
+        </Select>
+      </FormControl>
       <PartiesJoueesTable partiesJouees={partiesJouees} />
     </Box>
   );

@@ -13,6 +13,9 @@ import {
 import IPlayingCard from "../data_interfaces/IPlayingCard";
 import PlayingCard from "./PlayingCard";
 import { storageAccessTokenKey } from "../data_services/CustomAxios";
+import add from "../data_services/PartieJoueeDS";
+import IPartieJouee from "../data_interfaces/IPartieJouee";
+import { storageUsernameRealKey } from "../data_services/CustomAxios";
 
 const images = import.meta.glob("../../public/cards-images/*.jpg");
 
@@ -55,6 +58,72 @@ export default function MemoryGame() {
   const [attempts, setAttempts] = useState(0);
   const [cardBackColor, setCardBackColor] = useState<string>("ghostwhite");
   const [partieFin, setPartieFin] = useState(false);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const isUserConnected = Boolean(localStorage.getItem(storageUsernameRealKey));
+
+  const handleGameSave = async (isTerminee: boolean) => {
+    if (!isUserConnected) {
+      console.log(
+        "Utilisateur non connecté, session non ajoutée à l'historique"
+      );
+      return;
+    }
+
+    const partieJouee: Omit<IPartieJouee, "id" | "user"> = {
+      date: new Date(),
+      duree: timeSpent,
+      niveau: gameLevel,
+      tentatives: attempts,
+      terminee: isTerminee,
+    };
+
+    try {
+      await add.add(partieJouee);
+      console.log(
+        isTerminee
+          ? "Session ajoutée à l'historique"
+          : "Session sauvegardée avant fermeture"
+      );
+    } catch (error) {
+      console.error("Erreur dans l'ajout de la session", error);
+    }
+  };
+
+  useEffect(() => {
+    const saveGameBeforeExit = () => {
+      if (matches > 0) {
+        handleGameSave(false);
+      }
+    };
+
+    window.addEventListener("beforeunload", saveGameBeforeExit);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && matches > 0) {
+        saveGameBeforeExit();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("beforeunload", saveGameBeforeExit);
+      document.removeEventListener("visibilitychange", saveGameBeforeExit);
+    };
+  }, [timeSpent, attempts, gameLevel, matches]);
+
+  useEffect(() => {
+    if (partieFin) {
+      handleGameSave(true);
+    }
+  }, [partieFin]);
+
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      if (!partieFin) {
+        setTimeSpent((prevTime) => prevTime + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [partieFin]);
 
   useEffect(() => {
     if (selectedCards.length === 2) {
@@ -119,6 +188,7 @@ export default function MemoryGame() {
     setMatches(0);
     setAttempts(0);
     setPartieFin(false);
+    setTimeSpent(0);
   };
   return (
     <Container maxWidth="md" sx={{ marginY: "1rem" }}>
@@ -130,6 +200,9 @@ export default function MemoryGame() {
           Tentatives : {attempts}
           <br />
           Paires trouvées : {matches}
+          <br />
+          Temps passé : {Math.floor(timeSpent / 60)}:
+          {(timeSpent % 60).toString().padStart(2, "0")}
         </Typography>
 
         {partieFin ? (

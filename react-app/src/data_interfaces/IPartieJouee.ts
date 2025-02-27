@@ -7,4 +7,5 @@ export default interface IPartieJouee {
   duree: number;
   niveau: string;
   tentatives: number;
+  terminee: boolean;
 }
