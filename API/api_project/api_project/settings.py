@@ -43,11 +43,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_recaptcha',
 	'rest_framework_simplejwt',
 	'corsheaders',
 	'api_app',
 	'auth_app',
+    
 ]
+
+
+RECAPTCHA_PUBLIC_KEY = '6LeCXuQqAAAAAM5jKpV5aEGhaJWyjzVvZNnBo6YO'
+RECAPTCHA_PRIVATE_KEY = '6LeCXuQqAAAAAMVT4ulYzbl4tkn0TiP-k16GZ04O'
+RECAPTCHA_REQUIRED_SCORE = 0.5
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # Mettre au début ou avant le CommonMiddleware

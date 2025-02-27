@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.conf import settings
+import requests
 # Create your views here.
 
 from auth_app.serializers import \
@@ -15,6 +17,8 @@ from auth_app.serializers import \
   UserPasswordSerializer, \
   RegisterSerializer, \
   TokenSerializer
+
+
 
 class CurrentUserView(APIView):
   http_method_names = ['get', 'put', 'delete']
@@ -68,6 +72,23 @@ class RegisterView(APIView):
   http_method_names = ['post']
 
   def post(self, request):
+    recaptcha_token = request.data.get('recaptchaToken')
+
+    if not recaptcha_token:
+      return Response({'error': 'reCAPTCHA token is missing'}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+
+    recaptcha_response = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data={
+                'secret': settings.RECAPTCHA_PRIVATE_KEY,
+                'response': recaptcha_token,
+            }
+      )
+    recaptcha_result = recaptcha_response.json()
+
+    if not recaptcha_result.get('success') or recaptcha_result.get('score', 0) < 0.5:
+            return Response({'error': 'Invalid or low-score reCAPTCHA'}, status=status.HTTP_400_BAD_REQUEST)
+    
     username = request.data['username']
     existing_user = User.objects.filter(username=username).first()
     if existing_user is not None:
@@ -92,12 +113,30 @@ class TokenViewSet(ViewSet, TokenObtainPairView):
   serializer_class = TokenSerializer
 
   def create(self, request):
+    recaptcha_token = request.data.get('recaptcha')
+  
+    if not recaptcha_token:
+        return Response({'error': 'reCAPTCHA token is missing'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    recaptcha_response = requests.post(
+      'https://www.google.com/recaptcha/api/siteverify',
+      data={
+          'secret': settings.RECAPTCHA_PRIVATE_KEY,
+          'response': recaptcha_token,
+          }
+        )
+    recaptcha_result = recaptcha_response.json()
+
+    if not recaptcha_result.get('success') or recaptcha_result.get('score', 0) < 0.5:
+            return Response({'error': 'Invalid or low-score reCAPTCHA'}, status=status.HTTP_400_BAD_REQUEST)
+          
     serializer = self.get_serializer(data=request.data, context={'request': request})
 
     try:
       serializer.is_valid(raise_exception=True)
     except AuthenticationFailed:
-      return Response('no_active_account', status=status.HTTP_401_UNAUTHORIZED)
+      return Response('no_active_account', status=status.HTTP_40_UNAUTHORIZED)
     except TokenError as e:
       raise InvalidToken(e.args[0])
 

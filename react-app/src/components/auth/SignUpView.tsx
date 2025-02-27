@@ -6,8 +6,8 @@ import * as yup from "yup";
 import { Alert, Box, Button, Link, Typography } from "@mui/material";
 import FormTextField from "../controls/FormTextField";
 import ProgressBackdrop from "../controls/ProgressBackdrop";
-import IUser from "../../data_interfaces/IUser";
 import UserDS from "../../data_services/UserDS";
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 type FormSignUpFields = {
   firstname: string;
@@ -23,6 +23,7 @@ function SignUpView() {
   const [submitWarning, setSubmitWarning] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const formSchema = yup.object().shape({
     firstname: yup
@@ -61,48 +62,48 @@ function SignUpView() {
     resolver: yupResolver(formSchema),
   });
 
-  const handleFormSubmit = (data: FormSignUpFields): void => {
+  const handleFormSubmit = async (data: FormSignUpFields): Promise<void> => {
     setSubmitWarning("");
     setSubmitError("");
     setSubmitting(true);
 
-    const newUser: IUser = {
-      first_name: data.firstname,
-      last_name: data.lastname,
-      username: data.username,
-      email: data.email,
-    };
+    if (!executeRecaptcha) {
+      setSubmitError("Erreur reCAPTCHA, veuillez recharger la page.");
+      setSubmitting(false);
+      return;
+    }
 
-    UserDS.register(newUser, data.password)
-      .then(() => {
-        navigate("/login/");
-      })
-      .catch((err) => {
-        if (
-          err.response.status === 400 &&
-          err.response.data === "username_already_exists"
-        ) {
-          setSubmitWarning(
-            "Ce nom d'utilisateur est déjà utilisé, veuillez en choisir un autre."
-          );
-        } else if (
-          err.response.status === 400 &&
-          err.response.data === "email_already_exists"
-        ) {
-          setSubmitWarning(
-            "Ce courriel est déjà utilisé, veuillez en choisir un autre."
-          );
+    try {
+      const recaptchaToken = await executeRecaptcha("signup");
+
+      await UserDS.register(
+        {
+          first_name: data.firstname,
+          last_name: data.lastname,
+          username: data.username,
+          email: data.email,
+        },
+        data.password,
+        recaptchaToken
+      );
+
+      navigate("/login/");
+    } catch (err: any) {
+      if (err.response?.status === 400) {
+        if (err.response.data === "username_already_exists") {
+          setSubmitWarning("Ce nom d'utilisateur est déjà utilisé.");
+        } else if (err.response.data === "email_already_exists") {
+          setSubmitWarning("Cet email est déjà utilisé.");
         } else {
-          setSubmitError(
-            "Une erreur s'est produite lors de l'inscription, veuillez réessayer."
-          );
+          setSubmitError("Une erreur s'est produite lors de l'inscription, veuillez réessayer.");
         }
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
+      } else {
+        setSubmitError("Erreur de connexion au serveur.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
-
   const handleLoginClick = () => {
     navigate("/login/");
   };

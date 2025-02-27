@@ -62,7 +62,7 @@ function Evaluations() {
     });
   }, []);
 
-  const EvaluationsTable = ({ Evaluations }) => {
+  const EvaluationsTable: React.FC<{ Evaluations: IEvaluation[] }> = ({ Evaluations }) => {
     if (Evaluations.length === 0) {
       return (
         <Typography variant="h6" sx={{ mt: 2, textAlign: "center" }}>

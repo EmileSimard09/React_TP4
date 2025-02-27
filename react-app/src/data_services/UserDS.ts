@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 import CustomAxios, { setLocalToken, unsetLocalToken } from "./CustomAxios";
 import IUser from "../data_interfaces/IUser";
 
+
 const deleteUser = (): Promise<AxiosResponse<void>> =>
   CustomAxios.delete("auth/current-user/");
 
@@ -11,19 +12,18 @@ const changePassword = (password: string): Promise<AxiosResponse<IUser>> =>
 const get = (): Promise<AxiosResponse<IUser>> =>
   CustomAxios.get("auth/current-user/");
 
-const login = (username: string, password: string): Promise<boolean> => {
-  const promise = new Promise<boolean>((resolve, reject) => {
-    CustomAxios.post("auth/token/", { username, password })
-      .then((response) => {
-        setLocalToken(response.data);
-        resolve(true);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-  return promise;
-};
+  const login = (username: string, password: string, recaptchaToken: string): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      CustomAxios.post("auth/token/", { username, password, recaptcha: recaptchaToken })
+        .then((response) => {
+          setLocalToken(response.data);
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  };
 
 const logout = (): Promise<boolean> => {
   const promise = new Promise<boolean>((resolve) => {
@@ -35,7 +35,8 @@ const logout = (): Promise<boolean> => {
 
 const register = (
   user: IUser,
-  password: string
+  password: string,
+  recaptchaToken: string
 ): Promise<AxiosResponse<IUser>> =>
   CustomAxios.post("auth/register/", {
     first_name: user.first_name,
@@ -43,6 +44,7 @@ const register = (
     username: user.username,
     email: user.email,
     password,
+    recaptchaToken
   });
 
 const save = (user: IUser): Promise<AxiosResponse<IUser>> =>

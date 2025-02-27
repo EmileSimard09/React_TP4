@@ -17,6 +17,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import FormTextField from "../controls/FormTextField";
 import ProgressBackdrop from "../controls/ProgressBackdrop";
 import UserDS from "../../data_services/UserDS";
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+
 
 type FormLoginFields = {
   username: string;
@@ -30,6 +32,7 @@ function LoginView() {
   const [submitWarning, setSubmitWarning] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const formSchema = yup.object().shape({
     username: yup.string().required("Le nom d'utilisateur est obligatoire"),
@@ -48,30 +51,32 @@ function LoginView() {
     setShowPassword((prev) => !prev);
   };
 
-  const handleFormSubmit = (data: FormLoginFields): void => {
+  const handleFormSubmit = async (data: FormLoginFields): Promise<void> => {
     setSubmitWarning("");
     setSubmitError("");
     setSubmitting(true);
-
-    UserDS.login(data.username, data.password)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((err) => {
-        if (
-          err.response.status === 401 &&
-          err.response.data === "no_active_account"
-        ) {
-          setSubmitWarning("Aucun compte actif n'a été trouvé.");
-        } else {
-          setSubmitError(
-            "Une erreur s'est produite lors de la connexion, veuillez réessayer."
-          );
-        }
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
+  
+    if (!executeRecaptcha) {
+      setSubmitError("Erreur reCAPTCHA, veuillez recharger la page.");
+      setSubmitting(false);
+      return;
+    }
+  
+    try {
+      const recaptchaToken = await executeRecaptcha("login");
+  
+      await UserDS.login(data.username, data.password, recaptchaToken);
+  
+      navigate("/");
+    } catch (err: any) {
+      if (err.response?.status === 401 && err.response?.data === "no_active_account") {
+        setSubmitWarning("Aucun compte actif n'a été trouvé.");
+      } else {
+        setSubmitError("Une erreur s'est produite lors de la connexion, veuillez réessayer.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSignUpClick = () => {
