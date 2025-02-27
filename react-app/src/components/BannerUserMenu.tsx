@@ -29,6 +29,7 @@ import {
 } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import UserDS from "../data_services/UserDS";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
 
 function BannerUserMenu(): React.JSX.Element {
   const navigate: NavigateFunction = useNavigate();
@@ -60,6 +61,11 @@ function BannerUserMenu(): React.JSX.Element {
   const handleLogoutClick = (): void => {
     setUserAnchorEl(null);
     navigate("/logout/");
+  };
+
+  const handleAddEval = (): void => {
+    setUserAnchorEl(null);
+    navigate("/AddEvals/");
   };
 
   const handleDeleteUser = (): void => {
@@ -128,12 +134,14 @@ function BannerUserMenu(): React.JSX.Element {
               </ListItemText>
             </MenuItem>
           )}
-          <MenuItem onClick={handleOpenAbout} sx={{ py: "4px" }}>
+          <MenuItem onClick={handleAddEval} sx={{ py: "4px" }}>
             <ListItemIcon>
-              <InfoOutlinedIcon fontSize="small" />
+              <StarHalfIcon fontSize="small" />
             </ListItemIcon>
             <ListItemText>
-              <Typography sx={{ fontSize: "0.95rem" }}>À propos</Typography>
+              <Typography sx={{ fontSize: "0.95rem" }}>
+                Ajouter une évaluation
+              </Typography>
             </ListItemText>
           </MenuItem>
           <MenuItem onClick={handleDeleteUser} sx={{ py: "4px" }}>
