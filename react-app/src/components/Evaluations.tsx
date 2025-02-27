@@ -53,7 +53,7 @@ function Evaluations() {
   };
 
   const handleDeleteCancel = () => {
-    setOpenDialog(false); // Close the dialog if user cancels
+    setOpenDialog(false);
   };
 
   useEffect(() => {

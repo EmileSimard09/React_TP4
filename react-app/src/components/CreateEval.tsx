@@ -92,7 +92,7 @@ const EvaluationForm: React.FC<{
         disabled={loading}
         sx={{ mt: 2 }}
       >
-        {loading ? <CircularProgress size={24} /> : "Submit"}
+        {loading ? <CircularProgress size={24} /> : "Envoyer"}
       </Button>
     </Box>
   );

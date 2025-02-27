@@ -16,4 +16,19 @@ class Evaluation(models.Model):
         verbose_name = 'Evaluation'
         verbose_name_plural = 'Evaluations'
         ordering = ['date']
+        
+class PartiesJouees(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    niveau = models.CharField(max_length=100)
+    date = models.DateTimeField(auto_now_add=True)
+    duree= models.DecimalField(max_digits=5, decimal_places=2)
+    tentatives = models.IntegerField()
+    
+    def __str__(self):
+        return self.niveau
+    
+    class Meta:
+        verbose_name = 'Partie jouée'
+        verbose_name_plural = 'Partie jouées'
+        ordering = ['date']
 

@@ -14,6 +14,7 @@ import Logout from "./components/auth/Logout";
 import NotFound from "./components/NotFound";
 import Evaluations from "./components/Evaluations";
 import CreateEval from "./components/CreateEval";
+import PartiesJouees from "./components/PartieJouee";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="user-edit/me" element={<UserEditView />} />
             <Route path="password-edit/me" element={<PasswordEditView />} />
             <Route path="AddEvals" element={<CreateEval />} />
+            <Route path="historique" element={<PartiesJouees />} />
           </Route>
           <Route path="" element={<AuthContainer />}>
             <Route path="login" element={<LoginView />} />

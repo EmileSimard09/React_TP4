@@ -66,7 +66,7 @@ function Banner() {
                 marginRight: "1rem",
               }}
             >
-              Voir les évaluations
+              Évaluations
             </Link>
             <Link
               color="inherit"
@@ -77,7 +77,7 @@ function Banner() {
                 marginRight: "1rem",
               }}
             >
-              Voir les réglements
+              Réglements
             </Link>
             {localStorage.getItem(storageAccessTokenKey) ? (
               <>

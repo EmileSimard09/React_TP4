@@ -30,10 +30,10 @@ import {
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import UserDS from "../data_services/UserDS";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
+import HistoryIcon from "@mui/icons-material/History";
 
 function BannerUserMenu(): React.JSX.Element {
   const navigate: NavigateFunction = useNavigate();
-  const [aboutOpen, setAboutOpen] = useState(false);
   const [userAnchorEl, setUserAnchorEl] = useState<HTMLElement | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -44,13 +44,9 @@ function BannerUserMenu(): React.JSX.Element {
     setUserAnchorEl(null);
   };
 
-  const handleOpenAbout = (): void => {
+  const handlePartieClick = (): void => {
     setUserAnchorEl(null);
-    setAboutOpen(true);
-  };
-
-  const handleCloseAbout = (): void => {
-    setAboutOpen(false);
+    navigate("/historique/");
   };
 
   const handleUserEditClick = (): void => {
@@ -134,6 +130,16 @@ function BannerUserMenu(): React.JSX.Element {
               </ListItemText>
             </MenuItem>
           )}
+          <MenuItem onClick={handlePartieClick} sx={{ py: "4px" }}>
+            <ListItemIcon>
+              <HistoryIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>
+              <Typography sx={{ fontSize: "0.95rem" }}>
+                Historique de partie
+              </Typography>
+            </ListItemText>
+          </MenuItem>
           <MenuItem onClick={handleAddEval} sx={{ py: "4px" }}>
             <ListItemIcon>
               <StarHalfIcon fontSize="small" />
@@ -167,40 +173,6 @@ function BannerUserMenu(): React.JSX.Element {
           </MenuItem>
         </Menu>
       </Box>
-      <Dialog
-        aria-describedby="about-dialog-description"
-        aria-labelledby="about-dialog-title"
-        onClose={handleCloseAbout}
-        open={aboutOpen}
-      >
-        <DialogTitle id="about-dialog-title">À propos</DialogTitle>
-        <Divider />
-        <DialogContent>
-          <DialogContentText
-            id="about-dialog-description"
-            variant="body2"
-            textAlign="justify"
-          >
-            Rogatus ad ultimum admissusque in consistorium ambage nulla
-            praegressa inconsiderate et leviter proficiscere inquit ut
-            praeceptum est, Caesar sciens quod si cessaveris, et tuas et palatii
-            tui auferri iubebo prope diem annonas. hocque solo contumaciter
-            dicto subiratus abscessit nec in conspectum eius postea venit
-            saepius arcessitus.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ pb: 2, pr: 3 }}>
-          <Button
-            autoFocus
-            color="primary"
-            onClick={handleCloseAbout}
-            size="small"
-            variant="outlined"
-          >
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCancelDelete}

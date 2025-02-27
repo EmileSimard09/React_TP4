@@ -6,8 +6,25 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from django.utils.timezone import now
-from api_app.models import Evaluation
-from api_app.serializers import EvaluationSerializer
+from api_app.models import Evaluation, PartiesJouees
+from api_app.serializers import EvaluationSerializer, PartiesJoueesSerializer
+
+class PartiesJoueesViewSet(ModelViewSet):
+    http_method_names = ['get', 'post']
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PartiesJoueesSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        return PartiesJouees.objects.filter(user=user).order_by('-date')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user) 
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
 
 class EvaluationViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'delete']

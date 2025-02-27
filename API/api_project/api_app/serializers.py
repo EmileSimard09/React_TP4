@@ -1,4 +1,4 @@
-from api_app.models import Evaluation
+from api_app.models import Evaluation, PartiesJouees
 from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
@@ -13,5 +13,13 @@ class EvaluationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Evaluation
+        fields = '__all__'
+        read_only_fields = ('user',)
+
+class PartiesJoueesSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    
+    class Meta:
+        model = PartiesJouees
         fields = '__all__'
         read_only_fields = ('user',)

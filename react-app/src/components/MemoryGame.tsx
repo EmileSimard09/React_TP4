@@ -174,16 +174,16 @@ export default function MemoryGame() {
                 Blanc
               </Button>
               <Button
-                onClick={() => changeCardBackColor("lightblue")}
-                sx={{ backgroundColor: "lightblue", mr: 1 }}
+                onClick={() => changeCardBackColor("#FDB7EA")}
+                sx={{ backgroundColor: "#FDB7EA", mr: 1 }}
               >
-                Bleu clair
+                Rose
               </Button>
               <Button
-                onClick={() => changeCardBackColor("lightgreen")}
-                sx={{ backgroundColor: "lightgreen" }}
+                onClick={() => changeCardBackColor("#B7B1F2")}
+                sx={{ backgroundColor: "#B7B1F2" }}
               >
-                Vert clair
+                Mauve
               </Button>
             </div>
             <Grid2 container spacing={2} justifyContent="center">
