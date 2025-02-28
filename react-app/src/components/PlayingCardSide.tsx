@@ -30,7 +30,7 @@ export default function PlayingCardSide({
       >
         {isImage && imagePath ? (
           <img
-            src={imagePath.replace("../../public", "")} // Adjust path
+            src={imagePath.replace("../../public", "")} 
             alt="Playing Card"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
